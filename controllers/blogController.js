@@ -4,27 +4,29 @@ const BlogPost = require('../models/Blog');
 
 // Create a blog post
 exports.createPost = async (req, res) => {
-  try {
-    const { title, content } = req.body;
-
-    if (!title || !content) {
-      return res.status(400).json({ message: 'Title and content are required' });
+    try {
+      const { title, content, tags } = req.body;
+  
+      if (!title || !content) {
+        return res.status(400).json({ message: 'Title and content are required' });
+      }
+  
+      // Ensure the userId is populated from the authentication middleware
+      const post = new BlogPost({
+        title,
+        content,
+        tags, // Optionally pass tags if provided in the request body
+        userId: req.user.userId, // Attach userId from the authenticated user
+      });
+  
+      await post.save(); // Save the post to the database
+  
+      res.status(201).json({ message: 'Blog post created', post });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
     }
-
-    const post = new BlogPost({
-      title,
-      content,
-      author: req.user.userId,
-    });
-
-    await post.save();
-
-    res.status(201).json({ message: 'Blog post created', post });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+  };
 
 // Get all blog posts
 exports.getAllPosts = async (req, res) => {
