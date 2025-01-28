@@ -6,14 +6,26 @@ const router = express.Router();
 
 // Register
 router.post('/register', async (req, res) => {
-  const { username, email, password } = req.body;
-  try {
-    const user = await User.create({ username, email, password });
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+    const { username, email, password } = req.body;
+  
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+  
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+  
+    // Save new user to the database
+    const newUser = new User({ username, email, password: hashedPassword });
+    await newUser.save();
+  
+    // Generate JWT token
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  
+    res.status(201).json({ token });
+  });
 
 // Login
 router.post('/login', async (req, res) => {

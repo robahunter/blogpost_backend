@@ -76,44 +76,301 @@ PORT=3000
 MONGO_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/blog-platform
 JWT_SECRET=mysecretkey
 
-API Endpoints
+API Documentation
 Authentication
+POST /api/users/register
 
-    POST /auth/register - Register a new user.
-    POST /auth/login - Log in and get a JWT token.
+    Description: Register a new user.
+    Request Body:
+
+{
+  "username": "john",
+  "email": "johndoe@example.com",
+  "password": "securePassword123"
+}
+
+Response:
+
+    {
+      "message": "User registered successfully",
+      "token": "JWT_TOKEN"
+    }
+
+POST /api/users/login
+
+    Description: Log in and get a JWT token.
+    Request Body:
+
+{
+  "email": "johndoe@example.com",
+  "password": "securePassword123"
+}
+
+Response:
+
+    {
+      "message": "Login successful",
+      "token": "JWT_TOKEN"
+    }
 
 User Profile
+GET /api/users/me
 
-    GET /users/profile - Get the logged-in user’s profile.
-    PUT /users/profile - Update the logged-in user’s profile.
-    POST /users/:id/follow - Follow a user.
-    POST /users/:id/unfollow - Unfollow a user.
+    Description: Get the logged-in user’s profile (Protected).
+    Authorization: Bearer token in the header
+    Response:
+
+    {
+      "user": {
+        "id": "USER_ID",
+        "username": "john",
+        "email": "johndoe@example.com"
+      }
+    }
+
+PUT /api/users/me
+
+    Description: Update the logged-in user’s profile (Protected).
+    Authorization: Bearer token in the header
+    Request Body:
+
+{
+  "username": "john_updated",
+  "email": "newemail@example.com"
+}
+
+Response:
+
+    {
+      "message": "Profile updated successfully"
+    }
+
+DELETE /api/users/me
+
+    Description: Delete the logged-in user’s profile (Protected).
+    Authorization: Bearer token in the header
+    Response:
+
+    {
+      "message": "User deleted successfully"
+    }
 
 Blogs
+POST /api/posts
 
-    POST /blogs - Create a new blog.
-    GET /blogs - Get all blogs.
-    GET /blogs/:id - Get a specific blog by ID.
-    PUT /blogs/:id - Update a blog (only by the author).
-    DELETE /blogs/:id - Delete a blog (only by the author).
+    Description: Create a new blog (Protected).
+    Authorization: Bearer token in the header
+    Request Body:
+
+{
+  "title": "My First Blog",
+  "content": "This is the content of my first blog post."
+}
+
+Response:
+
+    {
+      "message": "Blog created successfully",
+      "blog": {
+        "id": "BLOG_ID",
+        "title": "My First Blog",
+        "content": "This is the content of my first blog post."
+      }
+    }
+
+GET /api/posts
+
+    Description: Get all blogs.
+    Response:
+
+    [
+      {
+        "id": "BLOG_ID",
+        "title": "My First Blog",
+        "content": "This is the content of my first blog post."
+      },
+      {
+        "id": "BLOG_ID_2",
+        "title": "Another Blog",
+        "content": "This is another blog content."
+      }
+    ]
+
+GET /api/posts/:id
+
+    Description: Get a specific blog by ID.
+    Response:
+
+    {
+      "id": "BLOG_ID",
+      "title": "My First Blog",
+      "content": "This is the content of my first blog post."
+    }
+
+PUT /api/posts/:id
+
+    Description: Update a blog (only by the author) (Protected).
+    Authorization: Bearer token in the header
+    Request Body:
+
+{
+  "title": "Updated Blog Title",
+  "content": "Updated content for the blog."
+}
+
+Response:
+
+    {
+      "message": "Blog updated successfully"
+    }
+
+DELETE /api/posts/:id
+
+    Description: Delete a blog (only by the author) (Protected).
+    Authorization: Bearer token in the header
+    Response:
+
+    {
+      "message": "Blog deleted successfully"
+    }
 
 Comments
+POST /api/posts/:id/comments
 
-    POST /blogs/:id/comments - Add a comment to a blog.
-    PUT /blogs/:id/comments/:commentId - Edit a comment.
-    DELETE /blogs/:id/comments/:commentId - Delete a comment.
+    Description: Add a comment to a blog (Protected).
+    Authorization: Bearer token in the header
+    Request Body:
+
+{
+  "content": "This is a comment on the blog."
+}
+
+Response:
+
+    {
+      "message": "Comment added successfully",
+      "comment": {
+        "id": "COMMENT_ID",
+        "content": "This is a comment on the blog."
+      }
+    }
+
+PUT /api/posts/:id/comments/:commentId
+
+    Description: Edit a comment (Protected).
+    Authorization: Bearer token in the header
+    Request Body:
+
+{
+  "content": "This is the updated comment."
+}
+
+Response:
+
+    {
+      "message": "Comment updated successfully"
+    }
+
+DELETE /api/posts/:id/comments/:commentId
+
+    Description: Delete a comment (Protected).
+    Authorization: Bearer token in the header
+    Response:
+
+    {
+      "message": "Comment deleted successfully"
+    }
 
 Likes
+POST /api/posts/:id/like
 
-    POST /blogs/:id/like - Like a blog.
-    POST /blogs/:id/unlike - Unlike a blog.
+    Description: Like a blog (Protected).
+    Authorization: Bearer token in the header
+    Response:
+
+    {
+      "message": "Blog liked successfully"
+    }
+
+POST /api/posts/:id/unlike
+
+    Description: Unlike a blog (Protected).
+    Authorization: Bearer token in the header
+    Response:
+
+    {
+      "message": "Blog unliked successfully"
+    }
 
 Ratings
+POST /api/posts/:id/rate
 
-    POST /blogs/:id/rate - Rate a blog (1-5 scale).
-    GET /blogs/:id/ratings - Get ratings and the average rating for a blog.
+    Description: Rate a blog (1-5 scale) (Protected).
+    Authorization: Bearer token in the header
+    Request Body:
+
+{
+  "rating": 4
+}
+
+Response:
+
+    {
+      "message": "Blog rated successfully"
+    }
+
+GET /api/posts/:id/ratings
+
+    Description: Get ratings and the average rating for a blog.
+    Response:
+
+    {
+      "ratings": [
+        {
+          "user": "USER_ID",
+          "rating": 4
+        },
+        {
+          "user": "USER_ID_2",
+          "rating": 5
+        }
+      ],
+      "averageRating": 4.5
+    }
 
 Search
+GET /api/search/users?query=<name>
 
-    GET /search/users?query=<name> - Search for users.
-    GET /search/blogs?query=<title> - Search for blogs.
+    Description: Search for users by name.
+    Response:
+
+    [
+      {
+        "id": "USER_ID",
+        "username": "john",
+        "email": "johndoe@example.com"
+      },
+      {
+        "id": "USER_ID_2",
+        "username": "jane",
+        "email": "janedoe@example.com"
+      }
+    ]
+
+GET /api/search/blogs?query=<title>
+
+    Description: Search for blogs by title.
+    Response:
+
+[
+  {
+    "id": "BLOG_ID",
+    "title": "My First Blog",
+    "content": "This is the content of my first blog post."
+  },
+  {
+    "id": "BLOG_ID_2",
+    "title": "Another Blog",
+    "content": "This is another blog content."
+  }
+]
