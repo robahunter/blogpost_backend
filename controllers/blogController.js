@@ -96,3 +96,80 @@ exports.getPostById = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+  // Add a comment to a blog post
+exports.addComment = async (req, res) => {
+    try {
+      const { content } = req.body;
+      const userId = req.user.userId; // Assume you're using a middleware to get the logged-in user's ID
+  
+      const post = await BlogPost.findById(req.params.id);
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+  
+      // Add the comment to the comments array
+      post.comments.push({ userId, content });
+      await post.save();
+  
+      res.status(200).json(post);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
+  // Update a comment on a blog post
+  exports.updateComment = async (req, res) => {
+    try {
+      const { content } = req.body;
+      const { commentId } = req.params;
+  
+      const post = await BlogPost.findById(req.params.id);
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+  
+      // Find the comment by its ID
+      const comment = post.comments.id(commentId);
+      if (!comment) {
+        return res.status(404).json({ message: 'Comment not found' });
+      }
+  
+      // Update the comment's content
+      comment.content = content;
+      await post.save();
+  
+      res.status(200).json(post);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
+  // Delete a comment from a blog post
+  exports.deleteComment = async (req, res) => {
+    try {
+      const { commentId } = req.params;
+  
+      const post = await BlogPost.findById(req.params.id);
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+  
+      // Remove the comment by its ID
+      const comment = post.comments.id(commentId);
+      if (!comment) {
+        return res.status(404).json({ message: 'Comment not found' });
+      }
+  
+      comment.remove();
+      await post.save();
+  
+      res.status(200).json(post);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  

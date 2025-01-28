@@ -20,4 +20,9 @@ router.put('/:id', authenticate, blogController.updatePost);
 // Delete post (Protected)
 router.delete('/:id', authenticate, blogController.deletePost);
 
+
+router.post('/:id/comments', authenticate, blogController.addComment);  // Add authentication middleware here
+router.put('/:id/comments/:commentId', authenticate, blogController.updateComment);  // Apply middleware
+router.delete('/:id/comments/:commentId', authenticate, blogController.deleteComment);  // Apply middleware
+
 module.exports = router;

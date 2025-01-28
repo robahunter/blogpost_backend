@@ -1,5 +1,13 @@
 const mongoose = require('mongoose');
 
+const commentSchema = new mongoose.Schema(
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      content: { type: String, required: true },
+    },
+    { timestamps: true }
+  );
+
 const ratingSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   rating: { type: Number, required: true, min: 1, max: 5 }, // Rating between 1 and 5
@@ -12,6 +20,12 @@ const blogSchema = new mongoose.Schema(
     content: { type: String, required: true },
     tags: { type: [String], default: [] },
     ratings: [ratingSchema], // Embed ratings array
+    comments: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+          content: { type: String, required: true },
+        },
+      ],
   },
   { timestamps: true }
 );
