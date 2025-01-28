@@ -50,8 +50,7 @@ Steps
 
     Clone the repository:
 
-git clone https://github.com/roberag/blog-platform-backend.git
-cd blog-platform-backend
+git clone https://github.com/robahunter/blogpost_backend.git
 
 Install dependencies:
 
